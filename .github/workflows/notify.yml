@@ -1,0 +1,14 @@
+name: Check due tasks and send notifications
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # every 10 minutes
+  workflow_dispatch: {}       # allows manual runs from the Actions tab
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the Vercel notification endpoint
+        run: |
+          curl -sS -f "https://home.vishwanathrajasekaran.in/api/send-notifications?key=${{ secrets.CRON_TRIGGER_KEY }}"
