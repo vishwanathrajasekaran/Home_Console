@@ -8,8 +8,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Home Console'
   const options = {
     body: data.body || 'A task needs attention.',
-    icon: '/icon.svg',
-    badge: '/icon.svg',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
     data: { url: data.url || '/' },
     tag: data.tag || undefined,
   }
