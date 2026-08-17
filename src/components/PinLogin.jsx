@@ -25,7 +25,7 @@ export default function PinLogin({ users, onLogin, error, busy }) {
 
   return (
     <div className="login-shell">
-      <div className="login-mark" />
+      <img className="login-logo" src="/icon-192.png" alt="VR Home" />
       <div>
         <div className="login-title">Home Console</div>
         <div className="login-sub">SELECT YOUR NAME · ENTER PIN</div>
