@@ -160,6 +160,10 @@ export default function App() {
         </div>
       )}
 
+      {isToday && !pushOn && (
+        <button className="notif-banner" onClick={enablePush}>🔔 Enable notifications for task reminders</button>
+      )}
+
       {boardError && <div className="error-line">{boardError}</div>}
       {!boardError && tasks === null && (
         <div className="load-line">
@@ -168,14 +172,6 @@ export default function App() {
         </div>
       )}
       {!boardError && tasks !== null && <TaskBoard tasks={tasks} onAction={handleAction} isFuture={!isToday && dateObj > new Date()} />}
-
-      {isToday && (
-        <div className="top-actions">
-          <button className={`notif-btn${pushOn ? ' on' : ''}`} onClick={enablePush} disabled={pushOn}>
-            {pushOn ? '● Notifications on' : 'Enable notifications'}
-          </button>
-        </div>
-      )}
 
       {calendarOpen && (
         <Calendar selectedDate={viewedDate} onSelect={setViewedDate} onClose={() => setCalendarOpen(false)} />
