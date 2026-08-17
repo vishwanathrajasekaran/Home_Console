@@ -21,3 +21,19 @@ export function initials(name) {
     .slice(0, 2)
     .toUpperCase()
 }
+
+const CATEGORY_ICON = {
+  Outside: '🌳',
+  Room: '🛏️',
+  Kitchen: '🍳',
+  Hall: '🛋️',
+  Balcony: '🪴',
+  'Office Room': '💼',
+  Other: '🗂️',
+}
+
+export function categoryIcon(category) {
+  return CATEGORY_ICON[category] || '🗂️'
+}
+
+export const CATEGORIES = ['Outside', 'Room', 'Kitchen', 'Hall', 'Balcony', 'Office Room']
