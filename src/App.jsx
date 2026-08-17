@@ -120,12 +120,15 @@ export default function App() {
     <div className="app-shell">
       <div className="ticker">
         <div className="ticker-info">
-          <div className="ticker-date">
-            {isToday ? dateLabel.toUpperCase() : `VIEWING ${dateLabel.toUpperCase()}`}
-            {session.role === 'Admin' && <span className="admin-tag">ADMIN</span>}
-          </div>
-          <div className="ticker-greeting">
-            {isToday ? <>Good {greetWord}, <span>{session.name}</span></> : <>{session.name}<span>'s day</span></>}
+          <img className="ticker-logo" src="/icon-192.png" alt="VR Home" />
+          <div className="ticker-text">
+            <div className="ticker-date">
+              {isToday ? dateLabel.toUpperCase() : `VIEWING ${dateLabel.toUpperCase()}`}
+              {session.role === 'Admin' && <span className="admin-tag">ADMIN</span>}
+            </div>
+            <div className="ticker-greeting">
+              {isToday ? <>Good {greetWord}, <span>{session.name}</span></> : <>{session.name}<span>'s day</span></>}
+            </div>
           </div>
         </div>
         <div className="ticker-right">
