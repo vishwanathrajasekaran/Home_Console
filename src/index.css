@@ -73,6 +73,7 @@ button { font-family: inherit; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* ---- Ticker header ---- */
@@ -175,7 +176,7 @@ button { font-family: inherit; }
 .status-cell.overdue .num { color: var(--red); }
 
 /* ---- Task board ---- */
-.board { flex: 1; padding: 8px 16px 32px; }
+.board { flex: 1; padding: 8px 16px calc(32px + env(safe-area-inset-bottom, 0px)); }
 
 .group-label {
   font-family: var(--font-mono);
@@ -286,6 +287,7 @@ button { font-family: inherit; }
   align-items: center;
   justify-content: center;
   padding: 24px;
+  padding-top: max(24px, env(safe-area-inset-top, 24px));
   gap: 30px;
   position: relative;
 }
