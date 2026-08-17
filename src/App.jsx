@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import PinLogin from './components/PinLogin.jsx'
 import TaskBoard from './components/TaskBoard.jsx'
-import RemarkModal from './components/RemarkModal.jsx'
 import Calendar from './components/Calendar.jsx'
 import { api } from './lib/api.js'
 import { isSubscribed, subscribeToPush } from './lib/push.js'
@@ -25,7 +24,6 @@ export default function App() {
   const [viewedDate, setViewedDate] = useState(todayKey())
   const [tasks, setTasks] = useState(null)
   const [boardError, setBoardError] = useState(null)
-  const [pendingAction, setPendingAction] = useState(null)
   const [pushOn, setPushOn] = useState(false)
   const [calendarOpen, setCalendarOpen] = useState(false)
 
@@ -42,6 +40,7 @@ export default function App() {
   const refreshBoard = useCallback(() => {
     if (!session) return
     setBoardError(null)
+    setTasks(null) // show the loading state immediately, including on date switches
     const call = viewedDate === todayKey() ? api.getToday(session.userId) : api.getForDate(session.userId, viewedDate)
     call.then((d) => setTasks(d.tasks)).catch((e) => setBoardError(e.message))
   }, [session, viewedDate])
@@ -58,7 +57,7 @@ export default function App() {
     api.login(userId, pin)
       .then((d) => {
         if (!d.ok) throw new Error('Wrong PIN')
-        const s = { userId, name: d.name }
+        const s = { userId, name: d.name, role: d.role }
         localStorage.setItem(SESSION_KEY, JSON.stringify(s))
         setSession(s)
         onFail() // clears the "verifying" state on success too
@@ -74,18 +73,9 @@ export default function App() {
     setViewedDate(todayKey())
   }
 
-  function handleAction(task, status) {
-    if (status === 'DONE') {
-      applyUpdate(task, status, '')
-    } else {
-      setPendingAction({ task, status })
-    }
-  }
-
-  function applyUpdate(task, status, remark) {
+  function handleAction(task, status, remark) {
     setTasks((prev) => prev.map((t) => t.occurrenceId === task.occurrenceId ? { ...t, status } : t))
-    setPendingAction(null)
-    api.updateOccurrence({ occurrenceId: task.occurrenceId, status, remark, userId: session.userId })
+    api.updateOccurrence({ occurrenceId: task.occurrenceId, status, remark: remark || '', userId: session.userId })
       .catch(() => refreshBoard())
   }
 
@@ -132,6 +122,7 @@ export default function App() {
         <div className="ticker-info">
           <div className="ticker-date">
             {isToday ? dateLabel.toUpperCase() : `VIEWING ${dateLabel.toUpperCase()}`}
+            {session.role === 'Admin' && <span className="admin-tag">ADMIN</span>}
           </div>
           <div className="ticker-greeting">
             {isToday ? <>Good {greetWord}, <span>{session.name}</span></> : <>{session.name}<span>'s day</span></>}
@@ -160,7 +151,12 @@ export default function App() {
       )}
 
       {boardError && <div className="error-line">{boardError}</div>}
-      {!boardError && tasks === null && <div className="load-line">FETCHING TASKS…</div>}
+      {!boardError && tasks === null && (
+        <div className="load-line">
+          <span className="verifying-dot" /><span className="verifying-dot" /><span className="verifying-dot" />
+          FETCHING TASKS…
+        </div>
+      )}
       {!boardError && tasks !== null && <TaskBoard tasks={tasks} onAction={handleAction} isFuture={!isToday && dateObj > new Date()} />}
 
       {isToday && (
@@ -169,15 +165,6 @@ export default function App() {
             {pushOn ? '● Notifications on' : 'Enable notifications'}
           </button>
         </div>
-      )}
-
-      {pendingAction && (
-        <RemarkModal
-          task={pendingAction.task}
-          status={pendingAction.status}
-          onCancel={() => setPendingAction(null)}
-          onConfirm={(remark) => applyUpdate(pendingAction.task, pendingAction.status, remark)}
-        />
       )}
 
       {calendarOpen && (
