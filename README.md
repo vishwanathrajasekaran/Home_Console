@@ -50,7 +50,11 @@ normalizes both sides of every date comparison), but you need to:
    rewrites every existing `Date` cell in `TASK_LOG` back to a plain
    `yyyy-MM-dd` string and locks the column to Plain Text formatting
    so Sheets won't silently convert it again.
-3. Deploy → Manage deployments → edit → **New version**.
+3. Same problem hits the `DueTime` column (typing `08:00` gets turned
+   into a real time value, which broke sorting with a
+   ".localeCompare is not a function" error). Run **fixTimeColumnFormat**
+   once too — it repairs `DueTime` in both `TASK_MASTER` and `TASK_LOG`.
+4. Deploy → Manage deployments → edit → **New version**.
 
 
 ### Editing tasks later
@@ -119,26 +123,61 @@ Actions wakes it up every 10 minutes.
 - Tap **Enable notifications** once per device/browser to opt into
   push — this has to be a tap (browsers require a user gesture before
   asking permission).
-- Today's tasks show grouped by Overdue / Today / Completed. Done is
-  one tap; Not Done / Skipped / Partial ask for a quick reason first.
+- Tasks are grouped by hour ("8 AM · 2 tasks"), with Overdue pinned
+  above. Tap a task card to open the action popup — Done confirms
+  immediately, Not Done / Skipped / Paused ask for a quick reason
+  first.
+
+### Adding categories to your existing sheet
+
+Run **`ensureCategoryColumn`** once from the function dropdown — it
+adds a `Category` column to `TASK_MASTER`, defaulting every task to
+`Other`. Then open `TASK_MASTER` and set each task's `Category` to
+one of: `Outside`, `Room`, `Kitchen`, `Hall`, `Balcony`, `Office Room`
+(or any text you like — the frontend just shows whatever's in the
+cell as a tag, with a matching icon for those six). To put "clean
+wardrobe" or "clean toilet" under Room, add a new task row with
+`Category` set to `Room` — no code change needed.
+
+### Giving someone Admin access (see everyone's tasks)
+
+Run **`ensureRoleColumn`** once — it adds a `Role` column to `USERS`,
+defaulting everyone to `Member`. Change one person's cell to `Admin`
+and they'll see every household member's tasks instead of just their
+own (each card still shows who it's assigned to).
 
 ## What shipped in this round
 
 - Fixed the Date-matching bug described above (Home screen showing
   no tasks despite Task Log having rows).
+- Fixed the same class of bug on the `DueTime` column
+  (`.localeCompare is not a function`).
+- Fixed a duplicate-occurrence bug: a duplicate `TaskID` row in
+  `TASK_MASTER` could generate many duplicate rows in `TASK_LOG` for
+  the same task. `dedupeTaskLog()` cleans up an already-affected sheet.
 - Calendar picker (tap the 📅 icon) — past/today dates show real
   logged history, future dates show a read-only "Scheduled" preview
   computed from `TASK_MASTER` (no actions, since there's no
   occurrence to update yet).
-- **Pause for today** (⏸ button) — pauses one occurrence without
-  counting it as skipped/not-done and without triggering further
-  reminders for it today. Separate from `Active` on `TASK_MASTER`,
-  which pauses a task permanently.
+- **Pause for today** — pauses one occurrence without counting it as
+  skipped/not-done and without triggering further reminders for it
+  today. Separate from `Active` on `TASK_MASTER`, which pauses a task
+  permanently.
 - Day/Night theme toggle (☀/☾/◐ icon) — Auto follows local time
   (day 6am–6pm), or force one manually; your choice is remembered.
-- A verifying/loading state after PIN entry, and a status donut +
-  24-hour timeline strip on the board (tap a timeline dot to jump to
-  that task).
+- **Admin role** — one person can see every household member's tasks
+  instead of just their own.
+- **Categories** — Outside / Room / Kitchen / Hall / Balcony / Office
+  Room (or your own), shown as a tag on each card.
+- **Redesigned task list**: tasks are now tap-to-open cards grouped by
+  hour, instead of a row with Done/Not Done/Skip always visible inline
+  (was overlapping/cramped on phones). Tapping opens a popup with icon
+  buttons (✓ ✕ ⏭ ⏸) — Done confirms instantly, the others reuse the
+  reason-chip flow.
+- Fixed a bug where switching dates via the calendar showed stale
+  data with no loading indicator in between.
+- A status donut + 24-hour timeline strip on the board (tap a
+  timeline dot to jump to that task).
 - `getStats(userId, days)` endpoint is in the backend for a future
   multi-day trend chart — not wired into the UI yet.
 
