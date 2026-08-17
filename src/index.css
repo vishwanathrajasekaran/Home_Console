@@ -483,17 +483,22 @@ button { font-family: inherit; }
 .cal-cell:not(.empty):hover { border-color: var(--amber); }
 
 /* ---- Responsive ---- */
-@media (max-width: 400px) {
-  .ticker { padding: 16px 14px 14px; flex-wrap: wrap; gap: 10px; }
-  .ticker-greeting { font-size: 18px; }
-  .ring-wrap { width: 44px; height: 44px; }
-  .ring-wrap svg { width: 44px; height: 44px; }
+@media (max-width: 480px) {
+  .ticker { padding: 14px 14px 12px; flex-direction: column; align-items: stretch; gap: 12px; }
+  .ticker-info { width: 100%; }
+  .ticker-text { flex: 1; min-width: 0; }
+  .ticker-greeting { font-size: 19px; }
+  .ticker-right { width: 100%; justify-content: space-between; gap: 8px; }
+  .ring-wrap { width: 40px; height: 40px; order: 2; }
+  .ring-wrap svg { width: 40px; height: 40px; }
+  .ticker-user { order: 3; }
+  .icon-btn { order: 1; width: 34px; height: 34px; font-size: 13px; }
   .board { padding: 6px 10px 96px; }
-  .task-row { flex-wrap: wrap; }
-  .task-actions { width: 100%; justify-content: flex-end; margin-top: 6px; }
+  .task-card { flex-wrap: wrap; }
   .status-strip { flex-wrap: wrap; padding: 12px 10px 4px; }
   .status-strip .status-cell { min-width: 70px; }
 }
+
 
 /* ---- Admin badge ---- */
 .admin-tag {
