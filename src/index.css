@@ -490,3 +490,100 @@ button { font-family: inherit; }
   .status-strip { flex-wrap: wrap; padding: 12px 10px 4px; }
   .status-strip .status-cell { min-width: 70px; }
 }
+
+/* ---- Admin badge ---- */
+.admin-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  background: var(--amber-wash);
+  border: 1px solid var(--amber-dim);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ---- Category tag ---- */
+.cat-tag {
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-dim);
+}
+
+/* ---- Task card (button, replaces the old always-visible action row) ---- */
+.card-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 4px; }
+
+.task-card {
+  position: relative;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.15s ease, transform 0.08s ease, background 0.15s ease;
+}
+.task-card:active:not(:disabled) { transform: scale(0.99); background: var(--surface-raised); }
+.task-card:disabled { cursor: default; }
+
+.task-card.priority-Critical { border-left-color: var(--red); background: linear-gradient(90deg, var(--red-wash), transparent 40%), var(--surface); }
+.task-card.priority-Important { border-left-color: var(--amber); background: linear-gradient(90deg, var(--amber-wash), transparent 40%), var(--surface); }
+.task-card.priority-Routine { border-left-color: var(--blue-dim); }
+.task-card.overdue { border-color: var(--red-dim); }
+.task-card.done { opacity: 0.5; }
+
+.task-card-body { flex: 1; min-width: 0; }
+.task-card .task-name { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+.task-card .task-meta { margin-top: 4px; }
+
+.overdue-pulse {
+  position: absolute; top: 10px; right: 10px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red);
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+/* ---- Action popup: icon grid instead of inline text buttons ---- */
+.task-detail-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.task-icon.lg { width: 42px; height: 42px; font-size: 20px; }
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 6px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+.action-btn:active { transform: scale(0.95); }
+.action-icon { font-size: 20px; }
+.action-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.03em; }
+
+.action-btn.action-done:hover, .action-btn.action-done:active { border-color: var(--green-dim); background: var(--green-wash); color: var(--green); }
+.action-btn.action-notdone:hover, .action-btn.action-notdone:active { border-color: var(--red-dim); background: var(--red-wash); color: var(--red); }
+.action-btn.action-skip:hover, .action-btn.action-skip:active { border-color: var(--border); background: var(--surface); color: var(--text); }
+.action-btn.action-pause:hover, .action-btn.action-pause:active { border-color: var(--blue-dim); background: var(--blue-wash); color: var(--blue); }
+
+/* Loading line with the same verifying dots used on the PIN screen */
+.load-line { display: flex; align-items: center; justify-content: center; gap: 8px; }
