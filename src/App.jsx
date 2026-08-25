@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import PinLogin from './components/PinLogin.jsx'
 import TaskBoard from './components/TaskBoard.jsx'
+import BoardSummary from './components/BoardSummary.jsx'
 import Calendar from './components/Calendar.jsx'
 import TankGauge from './components/TankGauge.jsx'
 import { api } from './lib/api.js'
 import { isSubscribed, subscribeToPush } from './lib/push.js'
 import { getStoredPreference, setStoredPreference, resolveTheme, applyTheme } from './lib/theme.js'
+import { TANKS } from './lib/tankConfig.js'
 
 const SESSION_KEY = 'home-ops-session'
 
@@ -30,17 +32,21 @@ export default function App() {
 
   const [themePref, setThemePref] = useState(getStoredPreference())
 
-  const [tank1, setTank1] = useState(null)
+  // { [tankId]: data } — fetches every configured tank in parallel, so
+  // adding a 4th/5th tank to tankConfig.js needs no changes here.
+  const [tankData, setTankData] = useState({})
   const [tankLoading, setTankLoading] = useState(true)
 
   useEffect(() => {
-    if (!session) return
+    if (!session || TANKS.length === 0) return
     let cancelled = false
     function poll() {
-      api.getWaterTank('1').then((d) => { if (!cancelled) setTank1(d) }).catch(() => {}).finally(() => { if (!cancelled) setTankLoading(false) })
+      Promise.all(TANKS.map((t) => api.getWaterTank(t.id).then((d) => [t.id, d]).catch(() => [t.id, null])))
+        .then((results) => { if (!cancelled) setTankData(Object.fromEntries(results)) })
+        .finally(() => { if (!cancelled) setTankLoading(false) })
     }
     poll()
-    const interval = setInterval(poll, 60000) // sensor writes ~once a minute
+    const interval = setInterval(poll, 60000) // sensors write ~once a minute
     return () => { cancelled = true; clearInterval(interval) }
   }, [session])
 
@@ -130,60 +136,68 @@ export default function App() {
   const circumference = 2 * Math.PI * R
 
   const themeIcon = { auto: '◐', day: '☀', night: '☾' }[themePref]
+  const isFuture = !isToday && dateObj > new Date()
 
   return (
     <div className="app-shell">
-      <div className="ticker">
-        <div className="ticker-info">
-          <img className="ticker-logo" src="/icon-192.png" alt="VR Home" />
-          <div className="ticker-text">
-            <div className="ticker-date">
-              {isToday ? dateLabel.toUpperCase() : `VIEWING ${dateLabel.toUpperCase()}`}
-              {session.role === 'Admin' && <span className="admin-tag">ADMIN</span>}
-            </div>
-            <div className="ticker-greeting">
-              {isToday ? <>Good {greetWord}, <span>{session.name}</span></> : <>{session.name}<span>'s day</span></>}
+      {/* Everything in here stays pinned while the task list below scrolls. */}
+      <div className="frozen-header">
+        <div className="ticker">
+          <div className="ticker-info">
+            <img className="ticker-logo" src="/icon-192.png" alt="VR Home" />
+            <div className="ticker-text">
+              <div className="ticker-date">
+                {isToday ? dateLabel.toUpperCase() : `VIEWING ${dateLabel.toUpperCase()}`}
+                {session.role === 'Admin' && <span className="admin-tag">ADMIN</span>}
+              </div>
+              <div className="ticker-greeting">
+                {isToday ? <>Good {greetWord}, <span>{session.name}</span></> : <>{session.name}<span>'s day</span></>}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="ticker-right">
-          <button className="icon-btn" title="Theme" onClick={cycleTheme}>{themeIcon}</button>
-          <button className="icon-btn" title="Calendar" onClick={() => setCalendarOpen(true)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-          </button>
-          {isToday && totalCount > 0 && (
-            <div className="ring-wrap">
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle className="ring-track" cx="26" cy="26" r={R} />
-                <circle className="ring-progress" cx="26" cy="26" r={R} strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pct)} />
+          <div className="ticker-right">
+            <button className="icon-btn" title="Theme" onClick={cycleTheme}>{themeIcon}</button>
+            <button className="icon-btn" title="Calendar" onClick={() => setCalendarOpen(true)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              <span className="ring-label">{doneCount}/{totalCount}</span>
-            </div>
-          )}
-          <button className="ticker-user" onClick={logout}>{session.name} ⏻</button>
+            </button>
+            {isToday && totalCount > 0 && (
+              <div className="ring-wrap">
+                <svg width="52" height="52" viewBox="0 0 52 52">
+                  <circle className="ring-track" cx="26" cy="26" r={R} />
+                  <circle className="ring-progress" cx="26" cy="26" r={R} strokeDasharray={circumference} strokeDashoffset={circumference * (1 - pct)} />
+                </svg>
+                <span className="ring-label">{doneCount}/{totalCount}</span>
+              </div>
+            )}
+            <button className="ticker-user" onClick={logout}>{session.name} ⏻</button>
+          </div>
         </div>
+
+        {isToday && TANKS.length > 0 && (
+          <div className="tank-grid">
+            {TANKS.map((t) => (
+              <TankGauge key={t.id} label={t.label} data={tankData[t.id]} loading={tankLoading} />
+            ))}
+          </div>
+        )}
+
+        {!isToday && (
+          <div className="date-nav">
+            <button className="pill-btn" onClick={() => setViewedDate(todayKey())}>← Back to today</button>
+          </div>
+        )}
+
+        {isToday && !pushOn && (
+          <button className="notif-banner" onClick={enablePush}>🔔 Enable notifications for task reminders</button>
+        )}
+
+        {!boardError && tasks !== null && <BoardSummary tasks={tasks} isFuture={isFuture} />}
       </div>
-
-      {isToday && (
-        <div className="tank-row">
-          <TankGauge label="Drinking Water Tank" data={tank1} loading={tankLoading} />
-        </div>
-      )}
-
-      {!isToday && (
-        <div className="date-nav">
-          <button className="pill-btn" onClick={() => setViewedDate(todayKey())}>← Back to today</button>
-        </div>
-      )}
-
-      {isToday && !pushOn && (
-        <button className="notif-banner" onClick={enablePush}>🔔 Enable notifications for task reminders</button>
-      )}
 
       {boardError && <div className="error-line">{boardError}</div>}
       {!boardError && tasks === null && (
@@ -192,7 +206,7 @@ export default function App() {
           FETCHING TASKS…
         </div>
       )}
-      {!boardError && tasks !== null && <TaskBoard tasks={tasks} onAction={handleAction} isFuture={!isToday && dateObj > new Date()} />}
+      {!boardError && tasks !== null && <TaskBoard tasks={tasks} onAction={handleAction} isFuture={isFuture} />}
 
       {calendarOpen && (
         <Calendar selectedDate={viewedDate} onSelect={setViewedDate} onClose={() => setCalendarOpen(false)} />
