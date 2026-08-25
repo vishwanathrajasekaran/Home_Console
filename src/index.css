@@ -611,29 +611,46 @@ button { font-family: inherit; }
 /* Loading line with the same verifying dots used on the PIN screen */
 .load-line { display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-/* ---- Water tank gauge ---- */
-.tank-row { padding: 14px 16px 0; }
+/* ---- Sticky header: ticker + tanks + notif banner + summary strip stay
+   pinned while the task list underneath scrolls. ---- */
+.frozen-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.board-summary { padding: 0 16px; }
+.board-summary .timeline-wrap { padding-top: 14px; }
+
+/* ---- Water tank gauges — scales to any number of tanks ---- */
+.tank-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  padding: 14px 16px 0;
+}
 
 .tank-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 10px 12px;
+  min-width: 0;
 }
 
 .tank-card.tank-loading {
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 11px;
   color: var(--text-faint);
-  letter-spacing: 0.08em;
-  padding: 18px;
+  padding: 14px;
 }
 
-.tank-visual { position: relative; width: 46px; height: 66px; flex-shrink: 0; }
+.tank-visual { position: relative; width: 30px; height: 46px; flex-shrink: 0; }
 .tank-svg { width: 100%; height: 100%; }
 .tank-outline { fill: var(--surface-raised); stroke: var(--border); stroke-width: 2; }
 .tank-fill { transition: y 0.6s ease, height 0.6s ease; }
@@ -644,34 +661,42 @@ button { font-family: inherit; }
   to { transform: translateX(3px); }
 }
 
-.tank-pct {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 11px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
 .tank-info { flex: 1; min-width: 0; }
-.tank-label { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+
+/* Percentage lives here now, as plain high-contrast text — not overlaid
+   on the small graphic, which was the illegible part before. */
+.tank-pct-big {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+}
+.tank-pct-sign { font-size: 13px; font-weight: 600; opacity: 0.8; }
+
+.tank-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .tank-empty { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); margin-top: 3px; }
 
 .tank-synced {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-faint);
-  margin-top: 3px;
+  margin-top: 2px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 .tank-synced.stale { color: var(--red); }
 .tank-offline-dot {
-  width: 6px; height: 6px; border-radius: 50%;
+  width: 5px; height: 5px; border-radius: 50%;
   background: var(--red);
   animation: pulse-dot 1.6s ease-in-out infinite;
+  flex-shrink: 0;
 }
