@@ -610,3 +610,68 @@ button { font-family: inherit; }
 
 /* Loading line with the same verifying dots used on the PIN screen */
 .load-line { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* ---- Water tank gauge ---- */
+.tank-row { padding: 14px 16px 0; }
+
+.tank-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+
+.tank-card.tank-loading {
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  padding: 18px;
+}
+
+.tank-visual { position: relative; width: 46px; height: 66px; flex-shrink: 0; }
+.tank-svg { width: 100%; height: 100%; }
+.tank-outline { fill: var(--surface-raised); stroke: var(--border); stroke-width: 2; }
+.tank-fill { transition: y 0.6s ease, height 0.6s ease; }
+.tank-wave { animation: tank-wave-drift 3.2s ease-in-out infinite alternate; transform-origin: center; }
+
+@keyframes tank-wave-drift {
+  from { transform: translateX(-3px); }
+  to { transform: translateX(3px); }
+}
+
+.tank-pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.tank-info { flex: 1; min-width: 0; }
+.tank-label { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.tank-empty { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); margin-top: 3px; }
+
+.tank-synced {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tank-synced.stale { color: var(--red); }
+.tank-offline-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red);
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
