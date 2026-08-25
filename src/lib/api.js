@@ -25,6 +25,7 @@ export const api = {
   getToday: (userId) => call({ action: 'getToday', userId }),
   getForDate: (userId, date) => call({ action: 'getForDate', userId, date }),
   getStats: (userId, days) => call({ action: 'getStats', userId, days }),
+  getWaterTank: (tank) => call({ action: 'getWaterTank', tank: tank || '1' }),
   updateOccurrence: ({ occurrenceId, status, remark, userId }) =>
     call({ action: 'updateOccurrence', occurrenceId, status, remark: remark || '', userId }),
   saveSubscription: (userId, subscription) =>
