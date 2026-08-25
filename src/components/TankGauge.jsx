@@ -1,7 +1,7 @@
 import { timeAgo, minutesSince } from '../lib/timeAgo.js'
 
 // Sensor is expected to write every ~1 min; flag it once readings go quiet.
-const STALE_AFTER_MIN = 10
+const STALE_AFTER_MIN = 20
 
 function levelColor(pct) {
   if (pct <= 20) return 'var(--red)'
