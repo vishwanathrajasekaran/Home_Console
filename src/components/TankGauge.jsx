@@ -11,7 +11,7 @@ function levelColor(pct) {
 
 export default function TankGauge({ label, data, loading }) {
   if (loading) {
-    return <div className="tank-card tank-loading">LOADING {label.toUpperCase()}…</div>
+    return <div className="tank-card tank-loading">···</div>
   }
   if (!data || !data.ok) {
     return null // sensor sheet not set up yet — stay quiet rather than show an error
@@ -50,13 +50,13 @@ export default function TankGauge({ label, data, loading }) {
             />
           </g>
         </svg>
-        <div className="tank-pct" style={{ color }}>{pct}%</div>
       </div>
       <div className="tank-info">
+        <div className="tank-pct-big" style={{ color }}>{pct}<span className="tank-pct-sign">%</span></div>
         <div className="tank-label">{label}</div>
         <div className={`tank-synced${stale ? ' stale' : ''}`}>
           {stale && <span className="tank-offline-dot" />}
-          {stale ? 'Sensor offline · last ' : 'Synced '}{timeAgo(data.timestamp)}
+          {stale ? 'Offline · ' : ''}{timeAgo(data.timestamp)}
         </div>
       </div>
     </div>
