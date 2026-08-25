@@ -3,6 +3,6 @@
 // Point that sensor's requests at &tank=2 to write into it.
 export const TANKS = [
   { id: '1', label: 'Water Sump' },
-   { id: '1', label: 'Salt Water' },
-   { id: '1', label: 'Drinking Water' },
+  // { id: '2', label: 'Salt Water' },
+  // { id: '3', label: 'Drinking Water' },
 ]
