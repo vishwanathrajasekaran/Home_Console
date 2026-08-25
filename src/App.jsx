@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import PinLogin from './components/PinLogin.jsx'
 import TaskBoard from './components/TaskBoard.jsx'
 import Calendar from './components/Calendar.jsx'
+import TankGauge from './components/TankGauge.jsx'
 import { api } from './lib/api.js'
 import { isSubscribed, subscribeToPush } from './lib/push.js'
 import { getStoredPreference, setStoredPreference, resolveTheme, applyTheme } from './lib/theme.js'
@@ -28,6 +29,20 @@ export default function App() {
   const [calendarOpen, setCalendarOpen] = useState(false)
 
   const [themePref, setThemePref] = useState(getStoredPreference())
+
+  const [tank1, setTank1] = useState(null)
+  const [tankLoading, setTankLoading] = useState(true)
+
+  useEffect(() => {
+    if (!session) return
+    let cancelled = false
+    function poll() {
+      api.getWaterTank('1').then((d) => { if (!cancelled) setTank1(d) }).catch(() => {}).finally(() => { if (!cancelled) setTankLoading(false) })
+    }
+    poll()
+    const interval = setInterval(poll, 60000) // sensor writes ~once a minute
+    return () => { cancelled = true; clearInterval(interval) }
+  }, [session])
 
   useEffect(() => {
     applyTheme(resolveTheme(themePref))
@@ -153,6 +168,12 @@ export default function App() {
           <button className="ticker-user" onClick={logout}>{session.name} ⏻</button>
         </div>
       </div>
+
+      {isToday && (
+        <div className="tank-row">
+          <TankGauge label="Drinking Water Tank" data={tank1} loading={tankLoading} />
+        </div>
+      )}
 
       {!isToday && (
         <div className="date-nav">
