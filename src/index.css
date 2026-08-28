@@ -437,6 +437,7 @@ button { font-family: inherit; }
 /* ---- Extra status tags ---- */
 .status-tag.SCHEDULED { background: var(--blue-wash); color: var(--blue); }
 .status-tag.PAUSED { background: var(--blue-wash); color: var(--blue); }
+.status-tag.SNOOZED { background: var(--amber-wash); color: var(--amber); white-space: nowrap; }
 .task-row.preview { opacity: 0.7; }
 .pill-btn.pause-btn { padding: 8px 10px; }
 .pill-btn.pause-btn:hover { background: var(--blue-dim); color: var(--blue); border-color: var(--blue-dim); }
@@ -583,7 +584,7 @@ button { font-family: inherit; }
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -607,6 +608,7 @@ button { font-family: inherit; }
 .action-btn.action-notdone:hover, .action-btn.action-notdone:active { border-color: var(--red-dim); background: var(--red-wash); color: var(--red); }
 .action-btn.action-skip:hover, .action-btn.action-skip:active { border-color: var(--border); background: var(--surface); color: var(--text); }
 .action-btn.action-pause:hover, .action-btn.action-pause:active { border-color: var(--blue-dim); background: var(--blue-wash); color: var(--blue); }
+.action-btn.action-snooze:hover, .action-btn.action-snooze:active { border-color: var(--amber-dim); background: var(--amber-wash); color: var(--amber); }
 
 /* Loading line with the same verifying dots used on the PIN screen */
 .load-line { display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -700,3 +702,12 @@ button { font-family: inherit; }
   animation: pulse-dot 1.6s ease-in-out infinite;
   flex-shrink: 0;
 }
+
+/* Native date input inside the snooze picker — keep it close to the
+   textarea styling it's swapped in for, without fighting the browser's
+   own calendar-picker UI too hard. */
+input[type="date"].remark-input {
+  color-scheme: dark;
+  padding: 10px 12px;
+}
+[data-theme="day"] input[type="date"].remark-input { color-scheme: light; }
