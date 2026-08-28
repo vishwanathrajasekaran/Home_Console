@@ -30,6 +30,7 @@ export default function TaskBoard({ tasks, onAction, isFuture }) {
   const overdue = tasks.filter((t) => t.status === 'PENDING' && t.overdue)
   const upcoming = tasks.filter((t) => (t.status === 'PENDING' && !t.overdue) || t.status === 'SCHEDULED')
   const paused = tasks.filter((t) => t.status === 'PAUSED')
+  const snoozed = tasks.filter((t) => t.status === 'SNOOZED')
   const done = tasks.filter((t) => ['DONE', 'NOT_DONE', 'SKIPPED', 'PARTIAL'].includes(t.status))
 
   if (tasks.length === 0) {
@@ -67,6 +68,15 @@ export default function TaskBoard({ tasks, onAction, isFuture }) {
         </>
       )}
 
+      {snoozed.length > 0 && (
+        <>
+          <div className="group-label">Snoozed</div>
+          <div className="card-list">
+            {snoozed.map((t) => <TaskCard key={t.occurrenceId} task={t} onOpen={setOpenTask} />)}
+          </div>
+        </>
+      )}
+
       {done.length > 0 && (
         <>
           <div className="group-label">Completed</div>
@@ -80,7 +90,7 @@ export default function TaskBoard({ tasks, onAction, isFuture }) {
         <TaskActionModal
           task={openTask}
           onClose={() => setOpenTask(null)}
-          onConfirm={(status, remark) => { onAction(openTask, status, remark); setOpenTask(null) }}
+          onConfirm={(status, remark, snoozeUntil) => { onAction(openTask, status, remark, snoozeUntil); setOpenTask(null) }}
         />
       )}
     </div>
