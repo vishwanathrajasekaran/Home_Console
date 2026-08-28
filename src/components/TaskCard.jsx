@@ -19,10 +19,13 @@ export default function TaskCard({ task, onOpen }) {
           <span className="due">{task.dueTime || 'anytime'}</span>
           <span className="assignee"><span className="avatar-dot" />{task.assignee}</span>
           {task.category && <span className="cat-tag">{categoryIcon(task.category)}</span>}
+          {task.snoozedFrom && <span className="cat-tag">⏰ from {task.snoozedFrom}</span>}
         </div>
       </div>
       {task.status !== 'PENDING' && (
-        <span className={`status-tag ${task.status}`}>{task.status.replace('_', ' ')}</span>
+        <span className={`status-tag ${task.status}`}>
+          {task.status === 'SNOOZED' && task.snoozedUntil ? `Snoozed → ${task.snoozedUntil}` : task.status.replace('_', ' ')}
+        </span>
       )}
       {isOverdue && <span className="overdue-pulse" />}
     </button>
