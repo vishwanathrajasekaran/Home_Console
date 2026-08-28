@@ -94,9 +94,9 @@ export default function App() {
     setViewedDate(todayKey())
   }
 
-  function handleAction(task, status, remark) {
-    setTasks((prev) => prev.map((t) => t.occurrenceId === task.occurrenceId ? { ...t, status } : t))
-    api.updateOccurrence({ occurrenceId: task.occurrenceId, status, remark: remark || '', userId: session.userId })
+  function handleAction(task, status, remark, snoozeUntil) {
+    setTasks((prev) => prev.map((t) => t.occurrenceId === task.occurrenceId ? { ...t, status, snoozedUntil: snoozeUntil || null } : t))
+    api.updateOccurrence({ occurrenceId: task.occurrenceId, status, remark: remark || '', userId: session.userId, snoozeUntil })
       .catch(() => refreshBoard())
   }
 
