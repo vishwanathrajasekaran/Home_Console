@@ -2,7 +2,7 @@ name: Check due tasks and send notifications
 
 on:
   schedule:
-    - cron: '*/10 * * * *'   # every 10 minutes
+    #- cron: '*/10 * * * *'   # every 10 minutes
   workflow_dispatch: {}       # allows manual runs from the Actions tab
 
 jobs:
